@@ -19,4 +19,9 @@ public class ResourcesManager : MonoBehaviour {
     {
         return Resources.Load("RT/" + name) as RenderTexture;
     }
+
+    public RuntimeAnimatorController GetAnimController(string name)
+    {
+        return Resources.Load("FSM/" + name) as RuntimeAnimatorController;
+    }
 }

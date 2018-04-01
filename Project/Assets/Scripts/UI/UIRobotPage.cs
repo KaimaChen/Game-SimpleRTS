@@ -68,7 +68,7 @@ public class UIRobotPage : MonoBehaviour {
             () =>
             {
                 Player.Instance.Money -= mTotalPrice;
-                Player.Instance.CreateRobot(mSelectedWeaponType, mSelectedChassisType);
+                RobotData.CreateRobot(mSelectedWeaponType, mSelectedChassisType, Player.Instance.transform);
                 CloseView();
             });
 

@@ -52,6 +52,7 @@ public class UIBase : MonoBehaviour {
         BtnTracks.onClick.AddListener(OnClickTracks);
         BtnGun.onClick.AddListener(OnClickGun);
         BtnLaser.onClick.AddListener(OnClickLaser);
+        BtnCannon.onClick.AddListener(OnClickCannon);
         BtnRocket.onClick.AddListener(OnClickRocket);
 
         Player.Instance.MoneyChangeEvent += CheckEnoughMoney;

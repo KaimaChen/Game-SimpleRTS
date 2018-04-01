@@ -7,13 +7,42 @@ using System.Collections.Generic;
 /// 负责独自去占领区域的
 /// </summary>
 public class SearchEnemyAI : MonoBehaviour {
-    private NavMeshAgent _Agent;
+    public float SenseRadius = 10;
+    public int Frequency = 10;
 
-    void Awake()
+    private int mFrameCounter;
+    private NavMeshAgent mAgent;
+    private RobotData mData;
+    private Animator mAnima;
+
+    private Transform mTarget = null;
+    public Transform Target
     {
-        _Agent = GetComponent<NavMeshAgent>();
+        get { return mTarget; }
     }
 
+    void Start()
+    {
+        mAgent = GetComponent<NavMeshAgent>();
+        mData = GetComponent<RobotData>();
+        mAnima = GetComponent<Animator>();
+        mFrameCounter = Frequency;
+    }
+
+    void Update()
+    {
+        mFrameCounter++;
+        if (mFrameCounter >= Frequency)
+        {
+            mFrameCounter = 0;
+            mAnima.SetFloat("Hp", mData.Hp);
+            if (IsNearPlayer())
+                mAnima.SetBool("Threaten", true);
+            else
+                mAnima.SetBool("Threaten", false);
+        }
+    }
+    
     public BaseArea FindNearestArea()
     {
         List<BaseArea> playerAreas = new List<BaseArea>();
@@ -41,7 +70,7 @@ public class SearchEnemyAI : MonoBehaviour {
     float DistanceToBaseArea(BaseArea area)
     {
         NavMeshPath path = new NavMeshPath();
-        _Agent.CalculatePath(area.Center.position, path);
+        mAgent.CalculatePath(area.Center.position, path);
         return PathLength(path);
     }
 
@@ -64,5 +93,21 @@ public class SearchEnemyAI : MonoBehaviour {
             i++;
         }
         return lengthSoFar;
+    }
+
+    public bool IsNearPlayer()
+    {
+        var list = Player.Instance.RobotList;
+        for (int i = 0; i < list.Count; i++)
+        {
+            if(Tools.Distance(transform.position, list[i].transform.position) <= SenseRadius)
+            {
+                mTarget = mTarget ?? list[i].transform;
+                return true;
+            }
+        }
+
+        mTarget = null;
+        return false;
     }
 }

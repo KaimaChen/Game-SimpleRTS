@@ -5,10 +5,6 @@ using System.Collections.Generic;
 public class Player : MonoBehaviour {
     public static Player Instance = null;
     
-    public Transform RobotSpawnPos;
-    
-    public List<BaseArea> BaseAreaList = new List<BaseArea>();
-    
     public delegate void VoidDelegate();
     public event VoidDelegate MoneyChangeEvent;
     public event VoidDelegate BuildingChangeEvent;
@@ -68,12 +64,12 @@ public class Player : MonoBehaviour {
     
     public void AddRobot(RobotData r)
     {
-        RobotList.Add(r);
+        mRobotList.Add(r);
     }
 
     public void RemoveRobot(RobotData r)
     {
-        RobotList.Remove(r);
+        mRobotList.Remove(r);
     }
 
     public List<RobotData> FindNeighbors(RobotData robot)
@@ -90,27 +86,5 @@ public class Player : MonoBehaviour {
             }
         }
         return neighbors;
-    }
-    
-    public GameObject CreateRobot(WeaponType weaponType, ChassisType chassisType)
-    {
-        GameObject weapon = Instantiate(ResourcesManager.Instance.GetPrefab(weaponType.ToString())) as GameObject;
-        GameObject chassis = Instantiate(ResourcesManager.Instance.GetPrefab(chassisType.ToString())) as GameObject;
-        GameObject robot = Instantiate(ResourcesManager.Instance.GetPrefab("RobotContainer"), RobotSpawnPos.position, Quaternion.identity, transform) as GameObject;
-        chassis.name = "Chassis";
-        chassis.transform.SetParent(robot.transform);
-        chassis.transform.localRotation = Quaternion.identity;
-        chassis.transform.localPosition = Vector3.zero;
-        weapon.name = "Weapon";
-        weapon.transform.SetParent(robot.transform);
-        weapon.transform.localRotation = Quaternion.identity;
-        weapon.transform.localPosition = Vector3.zero;
-        robot.name = "Robot_" + chassisType.ToString() + "_" + weaponType.ToString();
-        robot.transform.position = RobotSpawnPos.position;
-
-        robot.GetComponent<RobotMotor>().chassisType = chassisType;
-        robot.GetComponent<RobotAttack>().weaponType = weaponType;
-
-        return robot;
     }
 }

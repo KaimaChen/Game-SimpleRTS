@@ -58,16 +58,10 @@ public class RobotData : MonoBehaviour {
     }
 
     [SerializeField]
-    private Side _Side = Side.Team1;
+    private Side mSide = Side.Team1;
     public Side BelongSide
     {
-        get { return _Side; }
-        set
-        {
-            if (_Side != value)
-                OnChangeSide(value);
-            _Side = value;
-        }
+        get { return mSide; }
     }
 
     void Start()
@@ -99,21 +93,7 @@ public class RobotData : MonoBehaviour {
         else if (BelongSide == Side.Team2)
             EnemyTeamAI.Instance.RobotList.Remove(this);
     }
-
-    void OnChangeSide(Side newSide)
-    {
-        if (newSide == Side.Team1)
-        {
-            EnemyTeamAI.Instance.RobotList.Remove(this);
-            Player.Instance.RobotList.Add(this);
-        }
-        else if (newSide == Side.Team2)
-        {
-            Player.Instance.RobotList.Remove(this);
-            EnemyTeamAI.Instance.RobotList.Add(this);
-        }
-    }
-
+    
     public void InitChassis(ChassisType type)
     {
         mArmor = GameConfig.Instance.GetArmor(type);
@@ -137,5 +117,37 @@ public class RobotData : MonoBehaviour {
     {
         Hp -= demage * ((10 - mArmor) / 10);
         Hp = Hp < 0 ? 0 : Hp;
+    }
+
+    static GameObject CreateRawRobot(WeaponType weaponType, ChassisType chassisType, Transform parent, string prefabName)
+    {
+        Vector3 spawnPos = BaseAreaManager.Instance.GetPlayerSpawnPos();
+        GameObject weapon = Instantiate(ResourcesManager.Instance.GetPrefab(weaponType.ToString())) as GameObject;
+        GameObject chassis = Instantiate(ResourcesManager.Instance.GetPrefab(chassisType.ToString())) as GameObject;
+        GameObject robot = Instantiate(ResourcesManager.Instance.GetPrefab(prefabName), spawnPos, Quaternion.identity, parent) as GameObject;
+        chassis.name = "Chassis";
+        chassis.transform.SetParent(robot.transform);
+        chassis.transform.localRotation = Quaternion.identity;
+        chassis.transform.localPosition = new Vector3(0, -0.55f, 0);
+        weapon.name = "Weapon";
+        weapon.transform.SetParent(robot.transform);
+        weapon.transform.localRotation = Quaternion.identity;
+        weapon.transform.localPosition = Vector3.zero;
+        robot.name = "Robot_" + chassisType.ToString() + "_" + weaponType.ToString();
+
+        robot.GetComponent<RobotMotor>().chassisType = chassisType;
+        robot.GetComponent<RobotAttack>().weaponType = weaponType;
+
+        return robot;
+    }
+
+    public static GameObject CreateRobot(WeaponType weaponType, ChassisType chassisType, Transform parent)
+    {
+        return CreateRawRobot(weaponType, chassisType, parent, "RobotContainer");
+    }
+
+    public static GameObject CreateSearchRobot(WeaponType weaponType, ChassisType chassisType, Transform parent)
+    {
+        return CreateRawRobot(weaponType, chassisType, parent, "SearchRobotContainer");
     }
 }

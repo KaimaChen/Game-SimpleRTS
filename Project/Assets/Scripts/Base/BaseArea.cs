@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 /// <summary>
 /// 基地区域是属于某一方的，可以被占领
+/// 有建筑或敌人时不能占领
 /// </summary>
 public class BaseArea : MonoBehaviour {
     public Transform Center;
@@ -15,20 +16,25 @@ public class BaseArea : MonoBehaviour {
     public VoidEventHandler ProcessDoneEvent; //占领结束事件
     public VoidEventHandler OtherTeamEnterAreaEvent; //别的队进入到区域的检测范围
     
-    private bool _FirstFrame = true;
-    private int _FrameCounter = 0;
-    private RoundProcess _Process;
-    private List<BuildingBase> mOwnedBase;
+    private bool mFirstFrame = true;
+    private int mFrameCounter = 0;
+    private RoundProcess mProcess;
 
+    private List<BuildingBase> mOwnedBase;
     public List<BuildingBase> OwnedBase
     {
         get { return mOwnedBase; }
     }
 
-    #region unity
+    private Vector3 mSpawnPos;
+    public Vector3 SpawnPos
+    {
+        get { return mSpawnPos; }
+    }
+    
     void Awake()
     {
-        _Process = transform.Find("RoundProcess").GetComponent<RoundProcess>();
+        mProcess = transform.Find("RoundProcess").GetComponent<RoundProcess>();
     }
 
 	void Start () {
@@ -36,29 +42,28 @@ public class BaseArea : MonoBehaviour {
         mOwnedBase = new List<BuildingBase>(bases);
 
         ResetProcess();
-        _Process.FillEvent += OnProcessDone;
+        mProcess.FillEvent += OnProcessDone;
         
         OnChangSide(BelongSide);
+        mSpawnPos = GetComponentInChildren<SpawnPos>().transform.position;
     }
 	
 	void Update () {
-        if(_FirstFrame)
+        if(mFirstFrame)
         {
-            _FirstFrame = false;
+            mFirstFrame = false;
             Init();
             return;
         }
 
-        _FrameCounter++;
-        if(_FrameCounter >= Frequency)
+        mFrameCounter++;
+        if(mFrameCounter >= Frequency)
         {
-            _FrameCounter = 0;
-            if(IsSenseOtherTeam() && HasBuilding() == false)
+            mFrameCounter = 0;
+            if(IsSenseOtherTeam() && !IsSenseOurTeam() && HasBuilding() == false)
             {
-                if(_Process.IsFilling == false)
-                {
+                if(mProcess.IsFilling == false)
                     StartProcess();
-                }
             }
             else
             {
@@ -73,8 +78,6 @@ public class BaseArea : MonoBehaviour {
         Gizmos.DrawWireSphere(Center.position, SenseRadius);
     }
     
-    #endregion
-
     void Init()
     {
         SetBelongSide(BelongSide);
@@ -82,47 +85,57 @@ public class BaseArea : MonoBehaviour {
         {
             b.BelongSide = BelongSide;
         }
-
-        if (BelongSide == Side.Team1)
-            Player.Instance.BaseAreaList.Add(this);
-        else if (BelongSide == Side.Team2)
-            EnemyTeamAI.Instance.BaseAreaList.Add(this);
     }
 
-    /// <summary>
-    /// 是否检测到其他队伍进入
-    /// </summary>
-    bool IsSenseOtherTeam()
+    bool IsSenseTeam(Side side)
     {
         List<RobotData> robots = new List<RobotData>();
-        if (BelongSide == Side.Team1)
+        if (side == Side.Team1)
+            robots = Player.Instance.RobotList; 
+        else if (side == Side.Team2)
             robots = EnemyTeamAI.Instance.RobotList;
-        else if (BelongSide == Side.Team2)
-            robots = Player.Instance.RobotList;
 
-        foreach(RobotData robot in robots)
+        foreach (RobotData robot in robots)
         {
             if (Tools.Distance(robot.transform.position, Center.position) <= SenseRadius)
             {
-                if (OtherTeamEnterAreaEvent != null)
-                    OtherTeamEnterAreaEvent.Invoke();
                 return true;
             }
         }
-        
+
         return false;
+    }
+    
+    bool IsSenseOtherTeam()
+    {
+        Side side = Side.Team1;
+        if (BelongSide == Side.Team1)
+            side = Side.Team2;
+
+        bool result = IsSenseTeam(side);
+        if(result && OtherTeamEnterAreaEvent != null)
+        {
+            OtherTeamEnterAreaEvent.Invoke();
+        }
+
+        return result;
+    }
+
+    bool IsSenseOurTeam()
+    {
+        return IsSenseTeam(BelongSide);
     }
 
     void ResetProcess()
     {
-        _Process.Reset();
-        _Process.gameObject.SetActive(false);
+        mProcess.Reset();
+        mProcess.gameObject.SetActive(false);
     }
 
     void StartProcess()
     {
-        _Process.IsFilling = true;
-        _Process.gameObject.SetActive(true);
+        mProcess.IsFilling = true;
+        mProcess.gameObject.SetActive(true);
     }
     
     /// <summary>
@@ -130,7 +143,7 @@ public class BaseArea : MonoBehaviour {
     /// </summary>
     void OnProcessDone()
     {
-        _Process.Reset();
+        mProcess.Reset();
 
         if (BelongSide == Side.Team1)
             SetBelongSide(Side.Team2);
@@ -179,17 +192,6 @@ public class BaseArea : MonoBehaviour {
 
     void OnChangSide(Side newSide)
     {
-        if(newSide == Side.Team1)
-        {
-            Player.Instance.BaseAreaList.Add(this);
-            EnemyTeamAI.Instance.BaseAreaList.Remove(this);
-        }
-        else if(newSide == Side.Team2)
-        {
-            EnemyTeamAI.Instance.BaseAreaList.Add(this);
-            Player.Instance.BaseAreaList.Remove(this);
-        }
-
         foreach(BuildingBase b in OwnedBase)
         {
             b.BelongSide = newSide;

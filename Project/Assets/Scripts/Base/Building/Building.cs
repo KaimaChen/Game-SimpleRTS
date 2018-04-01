@@ -5,13 +5,13 @@ public class Building : MonoBehaviour {
 
     protected virtual void Start()
     {
-        mOwner = transform.parent.parent.GetComponent<BuildingBase>();
+        mOwner = GetComponentInParent<BuildingBase>();
     }
 
     public Side BelongSide()
     {
         if(mOwner == null)
-            mOwner = transform.parent.parent.GetComponent<BuildingBase>();
+            mOwner = GetComponentInParent<BuildingBase>();
 
         return mOwner.BelongSide;
     }

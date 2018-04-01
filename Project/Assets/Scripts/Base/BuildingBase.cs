@@ -99,6 +99,9 @@ public class BuildingBase : MonoBehaviour {
     public void Init(GameObject building, BuildingType buildType, WeaponType weaponType = WeaponType.None, ChassisType chassisType = ChassisType.None)
     {
         mBuilding = building;
+        mCurrentHp = GameConfig.BUILDING_MAX_HP;
+        mHp.gameObject.SetActive(true);
+        mHpBorder.gameObject.SetActive(true);
         SetType(buildType, weaponType, chassisType);
     }
 

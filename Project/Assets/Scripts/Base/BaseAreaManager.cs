@@ -23,7 +23,7 @@ public class BaseAreaManager : MonoBehaviour {
         mBaseAreaList = new List<BaseArea>(areas);
 	}
 
-    public int SideAreaCount(Side side)
+    int SideAreaCount(Side side)
     {
         int count = 0;
         mBaseAreaList.ForEach((BaseArea area) =>
@@ -43,4 +43,30 @@ public class BaseAreaManager : MonoBehaviour {
     {
         return SideAreaCount(Side.Team1);
     }
+
+    Vector3 GetSpawnPos(Side side)
+    {
+        Vector3 pos = Vector3.zero;
+        for(int i = 0; i < mBaseAreaList.Count; i++)
+        {
+            if(mBaseAreaList[i].BelongSide == side)
+            {
+                pos = mBaseAreaList[i].SpawnPos;
+                break;
+            }
+        }
+
+        return pos;
+    }
+
+    public Vector3 GetPlayerSpawnPos()
+    {
+        return GetSpawnPos(Side.Team1);
+    }
+
+    public Vector3 GetEnemySpawnPos()
+    {
+        return GetSpawnPos(Side.Team2);
+    }
+    
 }
