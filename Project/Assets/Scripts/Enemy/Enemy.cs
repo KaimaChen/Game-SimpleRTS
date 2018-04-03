@@ -1,121 +1,108 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System.Collections.Generic;
 
-/// <summary>
-/// 自动攻击附近的玩家
-/// </summary>
 public class Enemy : MonoBehaviour {
-    public int CheckPlayerFrequency = 10; 
-    public int CheckBuildingFrequency = 5;
+    public float SenseRadius = 10; //感应范围
+    public int Frequency = 10; //决策频率
 
-    private int _CheckPlayerCounter = 0;
-    private int _CheckBuildingCounter = 0;
-    private RobotAttack _Attack;
+    private int mFrameCounter;
+    private NavMeshAgent mAgent;
     private RobotData mData;
-    private RobotData _AttackTarget = null;
-    
-	void Start () {
-        _Attack = GetComponent<RobotAttack>();
+    private Animator mAnima;
+
+    private Transform mTarget = null;
+    public Transform Target
+    {
+        get { return mTarget; }
+    }
+
+    void Start()
+    {
+        mAgent = GetComponent<NavMeshAgent>();
         mData = GetComponent<RobotData>();
+        mAnima = GetComponent<Animator>();
+        mFrameCounter = Frequency;
     }
-	
-	void Update () {
-        CheckPlayer();
-        CheckBuilding();
-	}
 
-    void CheckPlayer()
+    void Update()
     {
-        _CheckPlayerCounter++;
-        if(_CheckPlayerCounter >= CheckPlayerFrequency)
+        mFrameCounter++;
+        if (mFrameCounter >= Frequency)
         {
-            _CheckPlayerCounter = 0;
-            RobotData robot = NearestPlayerRobot();
-            float distance = Vector3.Distance(robot.transform.position, transform.position);
-            if(robot != null && distance <= mData.AttackRadius)
-            {
-                _AttackTarget = robot;
-                _Attack.LockTarget(_AttackTarget.transform);
-            }
+            mFrameCounter = 0;
+            mAnima.SetFloat("Hp", mData.Hp);
+            if (IsNearPlayer())
+                mAnima.SetBool("Threaten", true);
             else
-            {
-                _AttackTarget = null;
-            }
+                mAnima.SetBool("Threaten", false);
         }
     }
-
-    void CheckBuilding()
+    
+    public BaseArea FindNearestArea()
     {
-        _CheckBuildingCounter++;
-        if(_CheckBuildingCounter >= CheckBuildingFrequency)
-        {
-            _CheckBuildingCounter = 0;
-            if (_AttackTarget != null) //优先攻击机器人
-                return;
-
-            //TODO
-        }
-    }
-
-    RobotData NearestPlayerRobot()
-    {
-        float minDis = float.MaxValue;
-        RobotData nearestRobot = null;
-        foreach(RobotData robot in Player.Instance.RobotList)
-        {
-            float distance = Vector3.Distance(robot.transform.position, transform.position);
-            if(distance < minDis)
-            {
-                minDis = distance;
-                nearestRobot = robot;
-            }
-        }
-
-        return nearestRobot;
-    }
-
-    //TODO
-    /*
-    Building NearestPlayerBuilding()
-    {
-        float minDis = float.MaxValue;
-        Building nearestBuilding = null;
-        BaseArea nearestArea = NearestPlayerArea();
-        if(nearestArea != null)
-        {
-            foreach(Base b in nearestArea.OwnedBase)
-            {
-                if (b.OwnBuildingType == BuildingType.None)
-                    continue;
-
-                float dis = Vector3.Distance(b.transform.position, transform.position);
-                if(dis < minDis)
-                {
-                    minDis = dis;
-                    //nearestBuilding = b.GetComponent<Building>();
-                }
-            }
-        }
-        return nearestBuilding;
-    }
-    */
-    BaseArea NearestPlayerArea()
-    {
-        float minDis = float.MaxValue;
-        BaseArea nearestArea = null;
+        List<BaseArea> playerAreas = new List<BaseArea>();
         foreach(BaseArea area in BaseAreaManager.Instance.BaseAreaList)
         {
-            if (area.BelongSide == Side.Team2)
-                continue;
+            if (area.BelongSide == Side.Team1)
+                playerAreas.Add(area);
+        }
 
-            float dis = Vector3.Distance(transform.position, area.Center.position);
-            if(dis < minDis)
+        float minDis = float.MaxValue;
+        BaseArea baseArea = null;
+        foreach(BaseArea area in playerAreas)
+        {
+            float dis = DistanceToBaseArea(area);
+            if (dis < minDis)
             {
                 minDis = dis;
-                nearestArea = area;
+                baseArea = area;
             }
         }
 
-        return nearestArea;
+        return baseArea;
+    }
+
+    float DistanceToBaseArea(BaseArea area)
+    {
+        NavMeshPath path = new NavMeshPath();
+        mAgent.CalculatePath(area.Center.position, path);
+        return PathLength(path);
+    }
+
+    /// <summary>
+    /// 计算路径的长度
+    /// </summary>
+    float PathLength(NavMeshPath path)
+    {
+        if (path.corners.Length < 2)
+            return 0;
+
+        Vector3 previousCorner = path.corners[0];
+        float lengthSoFar = 0.0F;
+        int i = 1;
+        while (i < path.corners.Length)
+        {
+            Vector3 currentCorner = path.corners[i];
+            lengthSoFar += Vector3.Distance(previousCorner, currentCorner);
+            previousCorner = currentCorner;
+            i++;
+        }
+        return lengthSoFar;
+    }
+
+    public bool IsNearPlayer()
+    {
+        var list = Player.Instance.RobotList;
+        for (int i = 0; i < list.Count; i++)
+        {
+            if(Tools.Distance(transform.position, list[i].transform.position) <= SenseRadius)
+            {
+                mTarget = mTarget ?? list[i].transform;
+                return true;
+            }
+        }
+
+        mTarget = null;
+        return false;
     }
 }

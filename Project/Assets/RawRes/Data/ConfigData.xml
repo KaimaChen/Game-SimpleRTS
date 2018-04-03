@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Data>
+	<NeighborDistance>5</NeighborDistance><!--双击选中附近的机器人的范围-->
+	<OriginMoney>100</OriginMoney>
+	<BuildSpeed>50</BuildSpeed>
+	<BuildingMaxHp>100</BuildingMaxHp>
+	<EnemySelectTime>2</EnemySelectTime><!--敌人选中状态的持续时间-->
+
+	<Weapon>
+		<Gun>
+			<AttackRate>5</AttackRate>
+			<AttackRadius>10</AttackRadius>
+			<Damage>5</Damage>
+			<Speed>60</Speed>
+			<Price>50</Price>
+			<BuildingPrice>50</BuildingPrice>
+		</Gun>
+		<Laser>
+			<AttackRate>0</AttackRate>
+			<AttackRadius>14</AttackRadius>
+			<Damage>27</Damage>
+			<Speed>0</Speed>
+			<Price>150</Price>
+			<BuildingPrice>150</BuildingPrice>
+		</Laser>
+		<Cannon>
+			<AttackRate>3</AttackRate>
+			<AttackRadius>12</AttackRadius>
+			<Damage>9</Damage>
+			<Speed>30</Speed>
+			<Price>100</Price>
+			<BuildingPrice>100</BuildingPrice>
+		</Cannon>
+		<Rocket>
+			<AttackRate>1</AttackRate>
+			<AttackRadius>18</AttackRadius>
+			<Damage>28</Damage>
+			<Speed>25</Speed>
+			<Price>200</Price>
+			<BuildingPrice>200</BuildingPrice>
+		</Rocket>
+	</Weapon>
+
+	<Chassis>
+		<Wheels>
+			<Speed>10</Speed>
+			<Armor>2</Armor>
+			<Price>50</Price>
+			<BuildingPrice>50</BuildingPrice>
+		</Wheels>
+		<Hover>
+			<Speed>11</Speed>
+			<Armor>3</Armor>
+			<Price>100</Price>
+			<BuildingPrice>100</BuildingPrice>
+		</Hover>
+		<Legs>
+			<Speed>12</Speed>
+			<Armor>5</Armor>
+			<Price>150</Price>
+			<BuildingPrice>150</BuildingPrice>
+		</Legs>
+		<Tracks>
+			<Speed>13</Speed>
+			<Armor>7</Armor>
+			<Price>200</Price>
+			<BuildingPrice>200</BuildingPrice>
+		</Tracks>
+	</Chassis>
+
+	<Building>
+		<Mine>
+			<Price>100</Price>
+		</Mine>
+		<Turret>
+			<Price>100</Price>
+		</Turret>
+	</Building>
+
+	<EnemyTeamAI>
+		<GuardNum>1</GuardNum>
+	</EnemyTeamAI>
+</Data>

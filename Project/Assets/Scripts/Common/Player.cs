@@ -45,7 +45,7 @@ public class Player : MonoBehaviour {
 
     void Start()
     {
-        Money = GameConfig.ORIGIN_MONEY;
+        Money = GameConfig.Instance.OriginMoney;
     }
 
     public void AddBuilding(BuildingBase build)
@@ -80,7 +80,7 @@ public class Player : MonoBehaviour {
             Vector2 p1 = new Vector2(r.transform.position.x, r.transform.position.z);
             Vector2 p2 = new Vector2(robot.transform.position.x, robot.transform.position.z);
             float dis = Vector3.Distance(p1, p2);
-            if (dis <= GameConfig.NEIGHBOR_DISTANCE)
+            if (dis <= GameConfig.Instance.NeighBorDistance)
             {
                 neighbors.Add(r);
             }

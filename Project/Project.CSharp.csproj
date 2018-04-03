@@ -86,14 +86,9 @@
     <Compile Include="Assets\Scripts\Common\Tools.cs" />
     <Compile Include="Assets\Scripts\Common\WeaponType.cs" />
     <Compile Include="Assets\Scripts\Enemy\Enemy.cs" />
-    <Compile Include="Assets\Scripts\Enemy\EnemyAI.cs" />
     <Compile Include="Assets\Scripts\Enemy\EnemyTeamAI.cs" />
     <Compile Include="Assets\Scripts\Enemy\FSM\SearchFSM_Attack.cs" />
     <Compile Include="Assets\Scripts\Enemy\FSM\SearchFSM_Search.cs" />
-    <Compile Include="Assets\Scripts\Enemy\FSM\State_EnemyAttack.cs" />
-    <Compile Include="Assets\Scripts\Enemy\FSM\State_EnemyChase.cs" />
-    <Compile Include="Assets\Scripts\Enemy\FSM\State_EnemyPatrol.cs" />
-    <Compile Include="Assets\Scripts\Enemy\SearchEnemyAI.cs" />
     <Compile Include="Assets\Scripts\Managers\GameConfig.cs" />
     <Compile Include="Assets\Scripts\Managers\GameManager.cs" />
     <Compile Include="Assets\Scripts\Managers\InputManager.cs" />
@@ -118,6 +113,7 @@
     <Compile Include="Assets\Scripts\UI\UIStartPage.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Assets\RawRes\Data\ConfigData.xml" />
     <None Include="Assets\Shaders\AlphaMask.shader" />
     <None Include="Assets\Shaders\DiffuseColor.shader" />
   </ItemGroup>

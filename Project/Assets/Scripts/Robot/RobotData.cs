@@ -92,6 +92,8 @@ public class RobotData : MonoBehaviour {
             Player.Instance.RemoveRobot(this);
         else if (BelongSide == Side.Team2)
             EnemyTeamAI.Instance.RobotList.Remove(this);
+
+        Destroy(mMapPoint.gameObject);
     }
     
     public void InitChassis(ChassisType type)

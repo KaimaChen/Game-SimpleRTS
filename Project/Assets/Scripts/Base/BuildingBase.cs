@@ -71,10 +71,14 @@ public class BuildingBase : MonoBehaviour {
 	void Start () {
         InputManager.Instance.LeftClickDownEvent += JudgeSelected;
 
-        mTimeToBuildOneHp = 1.0f / GameConfig.BUILDING_SPEED;
-        mHp.gameObject.SetActive(false);
-        mHpBorder.gameObject.SetActive(false);
+        mTimeToBuildOneHp = 1.0f / GameConfig.Instance.BuildingSpeed;
         ChangeHpEvent += UpdateHpBar;
+
+        if (mBuildingType == BuildingType.None) //Init方法是在Start前调用
+        {
+            mHp.gameObject.SetActive(false);
+            mHpBorder.gameObject.SetActive(false);
+        }
     }
 	
 	void Update () {
@@ -88,9 +92,9 @@ public class BuildingBase : MonoBehaviour {
                 mTimer -= times * mTimeToBuildOneHp;
             }
                 
-            if (CurrentHp >= GameConfig.BUILDING_MAX_HP)
+            if (CurrentHp >= GameConfig.Instance.BuildingMaxHp)
             {
-                mCurrentHp = GameConfig.BUILDING_MAX_HP;
+                mCurrentHp = GameConfig.Instance.BuildingMaxHp;
                 BuildComplete();
             }
         }
@@ -99,10 +103,10 @@ public class BuildingBase : MonoBehaviour {
     public void Init(GameObject building, BuildingType buildType, WeaponType weaponType = WeaponType.None, ChassisType chassisType = ChassisType.None)
     {
         mBuilding = building;
-        mCurrentHp = GameConfig.BUILDING_MAX_HP;
+        mCurrentHp = GameConfig.Instance.BuildingMaxHp;
+        SetType(buildType, weaponType, chassisType);
         mHp.gameObject.SetActive(true);
         mHpBorder.gameObject.SetActive(true);
-        SetType(buildType, weaponType, chassisType);
     }
 
     public void SetType(BuildingType buildType, WeaponType weaponType = WeaponType.None, ChassisType chassisType = ChassisType.None)
@@ -174,7 +178,7 @@ public class BuildingBase : MonoBehaviour {
 
     public string HpText()
     {
-        return mCurrentHp + "/" + GameConfig.BUILDING_MAX_HP;
+        return mCurrentHp + "/" + GameConfig.Instance.BuildingMaxHp;
     }
 
     void DestroyBuilding()
@@ -271,7 +275,7 @@ public class BuildingBase : MonoBehaviour {
 
     float HpPercent()
     {
-        float percent = 1.0f * CurrentHp / GameConfig.BUILDING_MAX_HP;
+        float percent = 1.0f * CurrentHp / GameConfig.Instance.BuildingMaxHp;
         percent = Mathf.Clamp(percent, 0, 1);
         return percent;
     }

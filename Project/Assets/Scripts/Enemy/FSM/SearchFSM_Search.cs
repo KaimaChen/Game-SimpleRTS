@@ -6,7 +6,7 @@ public class SearchFSM_Search : StateMachineBehaviour {
     private RobotMotor mMotor;
     private RobotAttack mAttack;
     private RobotData mData;
-    private SearchEnemyAI mSearchAI;
+    private Enemy mSearchAI;
     private BaseArea mTargetArea = null;
     private Transform mTargetBuilding = null;
      
@@ -14,7 +14,7 @@ public class SearchFSM_Search : StateMachineBehaviour {
         mTransform = animator.GetComponent<Transform>();
         mMotor = animator.GetComponent<RobotMotor>();
         mAttack = animator.GetComponent<RobotAttack>();
-        mSearchAI = animator.GetComponent<SearchEnemyAI>();
+        mSearchAI = animator.GetComponent<Enemy>();
         mData = animator.GetComponent<RobotData>();
         
         MoveToNearestArea();

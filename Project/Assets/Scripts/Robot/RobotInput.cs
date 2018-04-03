@@ -56,7 +56,7 @@ public class RobotInput : MonoBehaviour {
                 if(IsSelectThisPlayer())
                 {
                     RobotInteraction enemyInteraction = hitGo.GetComponent<RobotInteraction>();
-                    enemyInteraction.Select(GameConfig.ENEMY_SELECTE_TIME);
+                    enemyInteraction.Select(GameConfig.Instance.EnemySelectTime);
                     mAttack.LockTarget(hitGo.transform);
                 }
             }

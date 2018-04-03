@@ -3,12 +3,12 @@ using System.Collections;
 
 public class SearchFSM_Attack : StateMachineBehaviour {
     private RobotAttack mAttack;
-    private SearchEnemyAI mSearch;
+    private Enemy mSearch;
     
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         mAttack = animator.GetComponent<RobotAttack>();
-        mSearch = animator.GetComponent<SearchEnemyAI>();
+        mSearch = animator.GetComponent<Enemy>();
     }
 
     // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
