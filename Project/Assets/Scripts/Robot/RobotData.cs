@@ -93,7 +93,8 @@ public class RobotData : MonoBehaviour {
         else if (BelongSide == Side.Team2)
             EnemyTeamAI.Instance.RobotList.Remove(this);
 
-        Destroy(mMapPoint.gameObject);
+        if(mMapPoint != null)
+            Destroy(mMapPoint.gameObject);
     }
     
     public void InitChassis(ChassisType type)
@@ -139,6 +140,12 @@ public class RobotData : MonoBehaviour {
 
         robot.GetComponent<RobotMotor>().chassisType = chassisType;
         robot.GetComponent<RobotAttack>().weaponType = weaponType;
+
+        if(chassisType == ChassisType.Hover)
+        {
+            Vector3 pos = robot.transform.position;
+            robot.transform.position = new Vector3(pos.x, 1.2f, pos.z);
+        }
 
         return robot;
     }

@@ -84,14 +84,11 @@ public class UIRobotPage : MonoBehaviour {
         mPartsReady.Add(ChassisType.Tracks.ToString(), false);
         mPartsReady.Add("None", false);
 
-        Player.Instance.BuildingChangeEvent += CheckRobotPartsState;
-        CheckRobotPartsState();
-
         mSelectedWeaponType = WeaponType.Gun;
         mSelectedChassisType = ChassisType.Wheels;
-        SetData();
-        RobotShowControler.Instance.ShowWeapon(mSelectedWeaponType, mPartsReady[mSelectedWeaponType.ToString()]);
-        RobotShowControler.Instance.ShowChassis(mSelectedChassisType, mPartsReady[mSelectedChassisType.ToString()]);
+
+        Player.Instance.BuildingChangeEvent += CheckRobotPartsState;
+        CheckRobotPartsState();
     }
 
     void CloseView()
@@ -144,6 +141,10 @@ public class UIRobotPage : MonoBehaviour {
         mHoverDesc.text = mPartsReady[ChassisType.Hover.ToString()] ? READY : NONE;
         mLegsDesc.text = mPartsReady[ChassisType.Legs.ToString()] ? READY : NONE;
         mTracksDesc.text = mPartsReady[ChassisType.Tracks.ToString()] ? READY : NONE;
+
+        RobotShowControler.Instance.ShowWeapon(mSelectedWeaponType, mPartsReady[mSelectedWeaponType.ToString()]);
+        RobotShowControler.Instance.ShowChassis(mSelectedChassisType, mPartsReady[mSelectedChassisType.ToString()]);
+        SetData();
     }
 
     void SetData()

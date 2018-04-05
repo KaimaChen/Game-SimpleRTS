@@ -71,7 +71,6 @@
     <Compile Include="Assets\Scripts\Base\Building\MineBuilding.cs" />
     <Compile Include="Assets\Scripts\Base\Building\WeaponBuilding.cs" />
     <Compile Include="Assets\Scripts\Base\BuildingBase.cs" />
-    <Compile Include="Assets\Scripts\Common\AutoRotate.cs" />
     <Compile Include="Assets\Scripts\Common\Bullet.cs" />
     <Compile Include="Assets\Scripts\Common\CameraMove.cs" />
     <Compile Include="Assets\Scripts\Common\ChassisType.cs" />
