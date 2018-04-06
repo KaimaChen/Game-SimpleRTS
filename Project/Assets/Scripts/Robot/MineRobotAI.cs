@@ -9,23 +9,25 @@ public class MineRobotAI : MonoBehaviour {
     public float MinDistanceToOre = 3; //距离小于该值则视为到达金矿
     public float MinDistanceToBuilding = 5;
     public int UnloadMineralNeedFrequency = 5; //花多少决策时间来卸下金币到建筑物
-    
+    public int mMaxCarry = 500; //最大金币携带数量
+
     private int mFrameCounter = 0;
-    private int _UnloadFrequencyCounter = 0;
+    private int mUnloadFrequencyCounter = 0;
     private bool mIsUnloading = false;
     private MineBuilding mBuildingOwner = null; //创建该机器人的建筑物，每次机器人拿到钱都是回到该建筑物
-    private int _MaxCarry = 500; //最大金币携带数量
     [SerializeField]
     private int mCarriedGold = 0; //身上携带的金币数量
     
     private NavMeshAgent mAgent;
     private RobotMotor mMotor;
+    private RobotData mData;
     private GoldOre mCurOre; //当前挖掘的金矿
     
     void Start()
     {
         mAgent = GetComponent<NavMeshAgent>();
         mMotor = GetComponent<RobotMotor>();
+        mData = GetComponent<RobotData>();
         Mineral.localScale = Vector3.zero;
         mFrameCounter = Frequency;
     }
@@ -42,7 +44,7 @@ public class MineRobotAI : MonoBehaviour {
             {
                 UpdateUnload();
             }
-            else if(mCarriedGold < _MaxCarry)
+            else if(mCarriedGold < mMaxCarry)
             {
                 UpdateCollectGold();
             }
@@ -72,11 +74,11 @@ public class MineRobotAI : MonoBehaviour {
 
     void UpdateUnload()
     {
-        _UnloadFrequencyCounter++;
-        if (_UnloadFrequencyCounter >= UnloadMineralNeedFrequency)
+        mUnloadFrequencyCounter++;
+        if (mUnloadFrequencyCounter >= UnloadMineralNeedFrequency)
         {
             mIsUnloading = false;
-            _UnloadFrequencyCounter = 0;
+            mUnloadFrequencyCounter = 0;
             FindOreAndMove();
         }
     }
@@ -89,6 +91,9 @@ public class MineRobotAI : MonoBehaviour {
         if (mCurOre != null && DistanceTo(mCurOre.transform) <= MinDistanceToOre)
         {
             mCarriedGold += mCurOre.GoldTaken(CollectMineralPerFrequency);
+
+            Quaternion q = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(mCurOre.transform.position - transform.position), Time.deltaTime * mData.RotateSpeed);
+            transform.rotation = q;
         }
     }
 
@@ -128,9 +133,9 @@ public class MineRobotAI : MonoBehaviour {
         GoldOreArea nearestArea = null;
         GoldOre nearestOre = null;
         float minDis = float.MaxValue;
-        foreach(GoldOreArea area in TerrainManager.Instance.GoldOreAreas)
+        foreach(GoldOreArea area in GoldOreArea.GoldOreAreaList)
         {
-            float dis = NavDistanceTo(area.transform);
+            float dis = NavDistanceTo(area.NavTarget);
             if (minDis > dis)
             {
                 nearestArea = area;
@@ -204,7 +209,7 @@ public class MineRobotAI : MonoBehaviour {
 
     void UpdateMineral()
     {
-        float size = mCarriedGold / _MaxCarry;
+        float size = mCarriedGold / mMaxCarry;
         Mineral.localScale = new Vector3(size, size, size);
     }
 }

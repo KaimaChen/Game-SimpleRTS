@@ -2,11 +2,20 @@
 using System.Collections.Generic;
 
 public class GoldOreArea : MonoBehaviour {
-    private List<GoldOre> mGoldOres = new List<GoldOre>(); 
+    public static List<GoldOreArea> GoldOreAreaList = new List<GoldOreArea>();
 
+    public Transform NavTarget; //定义该金矿在导航中的位置，不用中心是因为可能会在Carve内而导致计算导航路径长度时错误
+
+    private List<GoldOre> mGoldOres = new List<GoldOre>();
     public List<GoldOre> GoldOres
     {
         get { return mGoldOres; }
+    }
+
+    void Awake()
+    {
+        NavTarget = transform.FindChild("NavTarget");
+        GoldOreAreaList.Add(this);
     }
 
 	void Start () {
@@ -17,9 +26,16 @@ public class GoldOreArea : MonoBehaviour {
             mGoldOres.Add(golds[i]);
         }
     }
-	
-    public void Remove(GoldOre target)
+
+    void OnDestroy()
     {
-        mGoldOres.Remove(target);
+        GoldOreAreaList.Remove(this);
+    }
+
+    public void Remove(GoldOre ore)
+    {
+        mGoldOres.Remove(ore);
+        if (mGoldOres.Count <= 0)
+            Destroy(gameObject);
     }
 }

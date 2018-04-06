@@ -5,6 +5,9 @@ using System.Xml;
 public class GameConfig : MonoBehaviour {
     public static GameConfig Instance = null;
 
+    public const int NAV_WALKABLE = 0;
+    public const int NAV_WATER = 3;
+
     public TextAsset dataFile;
     public Transform LeftUp;
     public Transform RightBottom;

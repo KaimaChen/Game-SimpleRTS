@@ -143,8 +143,7 @@ public class RobotData : MonoBehaviour {
 
         if(chassisType == ChassisType.Hover)
         {
-            Vector3 pos = robot.transform.position;
-            robot.transform.position = new Vector3(pos.x, 1.2f, pos.z);
+            robot.GetComponent<NavMeshAgent>().areaMask = 1 << GameConfig.NAV_WALKABLE | 1 << GameConfig.NAV_WATER;
         }
 
         return robot;

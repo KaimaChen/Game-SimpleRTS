@@ -93,7 +93,6 @@
     <Compile Include="Assets\Scripts\Managers\InputManager.cs" />
     <Compile Include="Assets\Scripts\Managers\MapManager.cs" />
     <Compile Include="Assets\Scripts\Managers\ResourcesManager.cs" />
-    <Compile Include="Assets\Scripts\Managers\TerrainManager.cs" />
     <Compile Include="Assets\Scripts\Managers\UIManager.cs" />
     <Compile Include="Assets\Scripts\Robot\MineRobotAI.cs" />
     <Compile Include="Assets\Scripts\Robot\RobotAttack.cs" />
