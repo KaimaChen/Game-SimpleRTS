@@ -1,5 +1,6 @@
 # RTS-Simple
 A simple RTS game simulate 《MeshCom》
 
-## Unity Version
+## Software
 Unity 5.4
+MagicaVoxel
