@@ -117,6 +117,18 @@ public class BuildingBase : MonoBehaviour {
         Player.Instance.AddBuilding(this);
     }
 
+    public bool IsTypeOf(BuildingType buildType, WeaponType weaponType = WeaponType.None, ChassisType chassisType = ChassisType.None)
+    {
+        if(buildType != BuildingType.RobotPart)
+        {
+            return mBuildingType == buildType;
+        }
+        else
+        {
+            return mBuildingType == buildType && mWeaponType == weaponType && mChassisType == chassisType;
+        }
+    }
+
     /// <summary>
     /// 查看建筑物的详情或进行建筑
     /// </summary>

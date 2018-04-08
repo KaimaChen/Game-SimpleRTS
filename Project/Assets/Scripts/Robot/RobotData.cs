@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System.Collections.Generic;
 
 public class RobotData : MonoBehaviour {
+    public static List<RobotData> RobotList = new List<RobotData>();
     public GameObject MapPointPrefab;
     public float Hp = 100;
     public float MaxHp = 100;
@@ -69,6 +70,7 @@ public class RobotData : MonoBehaviour {
         mMapPoint = (Instantiate(MapPointPrefab) as GameObject).transform;
         mMapPoint.SetParent(MapManager.Instance.transform);
 
+        RobotList.Add(this);
         if (BelongSide == Side.Team1)
             Player.Instance.AddRobot(this);
         else if (BelongSide == Side.Team2)
@@ -88,6 +90,7 @@ public class RobotData : MonoBehaviour {
 
     void OnDestroy()
     {
+        RobotList.Remove(this);
         if (BelongSide == Side.Team1)
             Player.Instance.RemoveRobot(this);
         else if (BelongSide == Side.Team2)
@@ -122,7 +125,7 @@ public class RobotData : MonoBehaviour {
         Hp = Hp < 0 ? 0 : Hp;
     }
 
-    static GameObject CreateRawRobot(WeaponType weaponType, ChassisType chassisType, Transform parent, string prefabName)
+    static GameObject CreateRawRobot(WeaponType weaponType, ChassisType chassisType, Transform parent, string prefabName, Vector3 pos)
     {
         Vector3 spawnPos = BaseAreaManager.Instance.GetPlayerSpawnPos();
         GameObject weapon = Instantiate(ResourcesManager.Instance.GetPrefab(weaponType.ToString())) as GameObject;
@@ -137,6 +140,7 @@ public class RobotData : MonoBehaviour {
         weapon.transform.localRotation = Quaternion.identity;
         weapon.transform.localPosition = Vector3.zero;
         robot.name = "Robot_" + chassisType.ToString() + "_" + weaponType.ToString();
+        robot.transform.position = pos;
 
         robot.GetComponent<RobotMotor>().chassisType = chassisType;
         robot.GetComponent<RobotAttack>().weaponType = weaponType;
@@ -149,13 +153,20 @@ public class RobotData : MonoBehaviour {
         return robot;
     }
 
-    public static GameObject CreateRobot(WeaponType weaponType, ChassisType chassisType, Transform parent)
+    public static GameObject CreateRobot(WeaponType weaponType, ChassisType chassisType, Transform parent, Vector3 pos)
     {
-        return CreateRawRobot(weaponType, chassisType, parent, "RobotContainer");
+        return CreateRawRobot(weaponType, chassisType, parent, "RobotContainer", pos);
     }
 
-    public static GameObject CreateSearchRobot(WeaponType weaponType, ChassisType chassisType, Transform parent)
+    public static GameObject CreateEnemyRobot(WeaponType weaponType, ChassisType chassisType, Transform parent, Vector3 pos)
     {
-        return CreateRawRobot(weaponType, chassisType, parent, "SearchRobotContainer");
+        return CreateRawRobot(weaponType, chassisType, parent, "EnemyRobotContainer", pos);
+    }
+
+    public static float GetRobotPrice(WeaponType weaponType, ChassisType chassisType)
+    {
+        float weaponPrice = GameConfig.Instance.GetWeaponPrice(weaponType);
+        float chassisPrice = GameConfig.Instance.GetChassisPrice(chassisType);
+        return weaponPrice + chassisPrice;
     }
 }

@@ -39,4 +39,9 @@ public class RobotMotor : MonoBehaviour {
         mAgent.Resume();
         mAgent.SetDestination(target);
     }
+
+    public void Stop()
+    {
+        mAgent.Stop();
+    }
 }

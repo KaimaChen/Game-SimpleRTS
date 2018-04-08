@@ -19,6 +19,7 @@ public class BaseArea : MonoBehaviour {
     private bool mFirstFrame = true;
     private int mFrameCounter = 0;
     private RoundProcess mProcess;
+    private Side mTargetSide;
 
     private List<BuildingBase> mOwnedBase;
     public List<BuildingBase> OwnedBase
@@ -44,7 +45,7 @@ public class BaseArea : MonoBehaviour {
         ResetProcess();
         mProcess.FillEvent += OnProcessDone;
         
-        OnChangSide(BelongSide);
+        SetBelongSide(BelongSide);
         mSpawnPos = GetComponentInChildren<SpawnPos>().transform.position;
     }
 	
@@ -87,32 +88,39 @@ public class BaseArea : MonoBehaviour {
         }
     }
 
-    bool IsSenseTeam(Side side)
+    RobotData IsSenseTeam(Side side)
     {
         List<RobotData> robots = new List<RobotData>();
         if (side == Side.Team1)
-            robots = Player.Instance.RobotList; 
+            robots = Player.Instance.RobotList;
         else if (side == Side.Team2)
             robots = EnemyTeamAI.Instance.RobotList;
+        else
+            robots = RobotData.RobotList;
 
         foreach (RobotData robot in robots)
         {
             if (Tools.Distance(robot.transform.position, Center.position) <= SenseRadius)
             {
-                return true;
+                return robot;
             }
         }
 
-        return false;
+        return null;
     }
     
     bool IsSenseOtherTeam()
     {
-        Side side = Side.Team1;
-        if (BelongSide == Side.Team1)
-            side = Side.Team2;
+        Side side = Side.Team2;
+        if (BelongSide == Side.Team2)
+            side = Side.Team1;
+        else if (BelongSide == Side.None)
+            side = Side.None;
 
-        bool result = IsSenseTeam(side);
+        RobotData robot = IsSenseTeam(side);
+        if (robot != null)
+            mTargetSide = robot.BelongSide;
+        bool result = robot != null;
         if(result && OtherTeamEnterAreaEvent != null)
         {
             OtherTeamEnterAreaEvent.Invoke();
@@ -123,7 +131,10 @@ public class BaseArea : MonoBehaviour {
 
     bool IsSenseOurTeam()
     {
-        return IsSenseTeam(BelongSide);
+        if (BelongSide == Side.None)
+            return false;
+        else
+            return IsSenseTeam(BelongSide) != null;
     }
 
     void ResetProcess()
@@ -145,10 +156,7 @@ public class BaseArea : MonoBehaviour {
     {
         mProcess.Reset();
 
-        if (BelongSide == Side.Team1)
-            SetBelongSide(Side.Team2);
-        else if (BelongSide == Side.Team2)
-            SetBelongSide(Side.Team1);
+        SetBelongSide(mTargetSide);
 
         if (ProcessDoneEvent != null)
             ProcessDoneEvent.Invoke();
@@ -171,11 +179,11 @@ public class BaseArea : MonoBehaviour {
     /// <summary>
     /// 是否有指定的建筑类型
     /// </summary>
-    public bool HasBuildingType(BuildingType type)
+    public bool HasBuildingType(BuildingType buildType, WeaponType weaponType = WeaponType.None, ChassisType chassisType = ChassisType.None)
     {
         foreach(BuildingBase b in mOwnedBase)
         {
-            if (b.BuildingType == type)
+            if (b.IsTypeOf(buildType, weaponType, chassisType))
                 return true;
         }
 
@@ -188,6 +196,15 @@ public class BaseArea : MonoBehaviour {
             OnChangSide(side);
 
         BelongSide = side;
+
+        if(side == Side.Team1)
+        {
+            EnemyTeamAI.Instance.BaseAreaList.Remove(this);
+        }
+        else if(side == Side.Team2)
+        {
+            EnemyTeamAI.Instance.BaseAreaList.Add(this);
+        }
     }
 
     void OnChangSide(Side newSide)
@@ -196,5 +213,16 @@ public class BaseArea : MonoBehaviour {
         {
             b.BelongSide = newSide;
         }
+    }
+
+    public BuildingBase FindEmptyBuildingBase()
+    {
+        foreach (BuildingBase b in OwnedBase)
+        {
+            if (b.BuildingType == BuildingType.None)
+                return b;
+        }
+
+        return null;
     }
 }

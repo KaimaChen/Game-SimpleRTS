@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 
 public class Enemy : MonoBehaviour {
-    public float SenseRadius = 10; //感应范围
+    public float SenseRadius = 20; //感应范围
     public int Frequency = 10; //决策频率
 
     private int mFrameCounter;
     private NavMeshAgent mAgent;
     private RobotData mData;
+    private RobotMotor mMotor;
+    private RobotAttack mAttack;
     private Animator mAnima;
 
     private Transform mTarget = null;
@@ -20,6 +22,8 @@ public class Enemy : MonoBehaviour {
     {
         mAgent = GetComponent<NavMeshAgent>();
         mData = GetComponent<RobotData>();
+        mMotor = GetComponent<RobotMotor>();
+        mAttack = GetComponent<RobotAttack>();
         mAnima = GetComponent<Animator>();
         mFrameCounter = Frequency;
     }
@@ -40,16 +44,16 @@ public class Enemy : MonoBehaviour {
     
     public BaseArea FindNearestArea()
     {
-        List<BaseArea> playerAreas = new List<BaseArea>();
+        List<BaseArea> otherAreaes = new List<BaseArea>();
         foreach(BaseArea area in BaseAreaManager.Instance.BaseAreaList)
         {
-            if (area.BelongSide == Side.Team1)
-                playerAreas.Add(area);
+            if (area.BelongSide != Side.Team2)
+                otherAreaes.Add(area);
         }
 
         float minDis = float.MaxValue;
         BaseArea baseArea = null;
-        foreach(BaseArea area in playerAreas)
+        foreach(BaseArea area in otherAreaes)
         {
             float dis = DistanceToBaseArea(area);
             if (dis < minDis)
@@ -104,5 +108,15 @@ public class Enemy : MonoBehaviour {
 
         mTarget = null;
         return false;
+    }
+
+    public void MoveAndAttackPlayer(Transform target)
+    {
+        mMotor.MoveTo(target.position);
+        if(Tools.Distance(transform.position, target.position) < mData.AttackRadius / 2)
+        {
+            mMotor.Stop();
+            mAttack.LockTarget(target);
+        }
     }
 }
