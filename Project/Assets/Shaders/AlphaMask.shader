@@ -1,4 +1,4 @@
-﻿Shader "Custom/AlphaMask" {
+﻿Shader "Kaima/AlphaMask" {
 	Properties
 	{
 		_Color("Main Color", Color) = (1,1,1,1)

@@ -76,6 +76,9 @@
     <Compile Include="Assets\Scripts\Common\ChassisType.cs" />
     <Compile Include="Assets\Scripts\Common\ClickSign.cs" />
     <Compile Include="Assets\Scripts\Common\DontDestroyOnLoad.cs" />
+    <Compile Include="Assets\Scripts\Common\FogOfWar.cs" />
+    <Compile Include="Assets\Scripts\Common\GraphicsTool.cs" />
+    <Compile Include="Assets\Scripts\Common\NoiseTool.cs" />
     <Compile Include="Assets\Scripts\Common\Player.cs" />
     <Compile Include="Assets\Scripts\Common\RobotShowControler.cs" />
     <Compile Include="Assets\Scripts\Common\Rotate.cs" />
@@ -114,6 +117,8 @@
     <None Include="Assets\RawRes\Data\ConfigData.xml" />
     <None Include="Assets\Shaders\AlphaMask.shader" />
     <None Include="Assets\Shaders\DiffuseColor.shader" />
+    <None Include="Assets\Shaders\FogOfWar.shader" />
+    <None Include="Assets\Shaders\FogOfWarCast.shader" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\SyntaxTree\UnityVS\2015\UnityVS.CSharp.targets" />
 </Project>

@@ -182,4 +182,24 @@ public class GameConfig : MonoBehaviour {
             return mData[buildType.ToString() + "Price"];
         }
     }
+
+    public Vector3 TopLeft()
+    {
+        return new Vector3(mSceneHorizontal.x, 0, mSceneVertical.y);
+    }
+
+    public Vector3 TopRight()
+    {
+        return new Vector3(mSceneHorizontal.y, 0, mSceneVertical.y);
+    }
+
+    public Vector3 BottomLeft()
+    {
+        return new Vector3(mSceneHorizontal.x, 0, mSceneVertical.x);
+    }
+
+    public Vector3 BottomRight()
+    {
+        return new Vector3(mSceneHorizontal.y, 0, mSceneVertical.x);
+    }
 }
